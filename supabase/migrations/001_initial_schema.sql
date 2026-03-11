@@ -1,6 +1,6 @@
 -- Enable required extensions
 create extension if not exists "uuid-ossp";
-create extension if not exists "postgis";
+-- Note: postgis removed; lat/lng stored as numeric(10,7)
 
 -- ============================================================
 -- ENUMS
@@ -412,17 +412,8 @@ create policy "Tenants can view their own unit" on public.units
     )
   );
 
--- Renter profiles: landlords can view profiles of applicants
-create policy "Landlords can view renter profiles for their applications" on public.renter_profiles
-  for select using (
-    exists (
-      select 1 from public.applications a
-      join public.listings l on l.id = a.listing_id
-      join public.properties p on p.id = l.property_id
-      where a.renter_id = renter_profiles.user_id
-      and p.landlord_id = auth.uid()
-    )
-  );
+-- Note: "Landlords can view renter profiles for their applications" policy
+-- is applied via 004_public_search_rls.sql after all tables exist
 
 -- ============================================================
 -- TRIGGERS: updated_at auto-update
@@ -504,31 +495,37 @@ values
   ('avatars', 'avatars', true, 5242880, array['image/jpeg','image/png','image/webp'])
 on conflict (id) do nothing;
 
--- Storage policies
+-- Storage policies (drop first so re-runs are idempotent)
+drop policy if exists "Property photos are publicly viewable" on storage.objects;
 create policy "Property photos are publicly viewable" on storage.objects
   for select using (bucket_id = 'property-photos');
 
+drop policy if exists "Landlords can upload property photos" on storage.objects;
 create policy "Landlords can upload property photos" on storage.objects
   for insert with check (
     bucket_id = 'property-photos'
     and auth.role() = 'authenticated'
   );
 
+drop policy if exists "Authenticated users can upload documents" on storage.objects;
 create policy "Authenticated users can upload documents" on storage.objects
   for insert with check (
     bucket_id = 'documents'
     and auth.role() = 'authenticated'
   );
 
+drop policy if exists "Users can view own documents" on storage.objects;
 create policy "Users can view own documents" on storage.objects
   for select using (
     bucket_id = 'documents'
     and auth.uid()::text = (storage.foldername(name))[1]
   );
 
+drop policy if exists "Avatars are publicly viewable" on storage.objects;
 create policy "Avatars are publicly viewable" on storage.objects
   for select using (bucket_id = 'avatars');
 
+drop policy if exists "Users can upload own avatar" on storage.objects;
 create policy "Users can upload own avatar" on storage.objects
   for insert with check (
     bucket_id = 'avatars'
