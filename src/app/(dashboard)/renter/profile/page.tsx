@@ -46,7 +46,7 @@ export default function RenterProfilePage() {
         employer_name: "",
         credit_score_range: "",
         rental_history: [],
-        references: [],
+        personal_references: [],
         income_verification_docs: [],
         has_pets: false,
         pet_details: "",
@@ -105,14 +105,14 @@ export default function RenterProfilePage() {
   function addReference() {
     setProfile((p) => ({
       ...p!,
-      references: [...(p?.references ?? []), { name: "", relationship: "" }],
+      personal_references: [...(p?.personal_references ?? []), { name: "", relationship: "" }],
     }));
   }
 
   function updateReference(idx: number, update: Partial<Reference>) {
     setProfile((p) => ({
       ...p!,
-      references: p!.references.map((r, i) => (i === idx ? { ...r, ...update } : r)),
+      personal_references: p!.personal_references.map((r, i) => (i === idx ? { ...r, ...update } : r)),
     }));
   }
 
@@ -276,10 +276,10 @@ export default function RenterProfilePage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {!profile?.references?.length && (
+            {!profile?.personal_references?.length && (
               <p className="text-sm text-muted-foreground">Add references who can vouch for you as a tenant.</p>
             )}
-            {profile?.references?.map((r, i) => (
+            {profile?.personal_references?.map((r, i) => (
               <div key={i} className="grid grid-cols-2 gap-3">
                 <Input placeholder="Name" value={r.name} onChange={(e) => updateReference(i, { name: e.target.value })} />
                 <Input placeholder="Relationship" value={r.relationship} onChange={(e) => updateReference(i, { relationship: e.target.value })} />

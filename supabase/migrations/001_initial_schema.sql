@@ -56,7 +56,7 @@ create table public.renter_profiles (
   employer_name text,
   credit_score_range text,
   rental_history jsonb default '[]'::jsonb,
-  references jsonb default '[]'::jsonb,
+  personal_references jsonb default '[]'::jsonb,
   income_verification_docs text[] default '{}',
   has_pets boolean default false,
   pet_details text,

@@ -208,7 +208,7 @@ export interface RenterProfile {
   employer_name?: string;
   credit_score_range?: string;
   rental_history: RentalHistoryEntry[];
-  references: Reference[];
+  personal_references: Reference[];
   income_verification_docs: string[];
   has_pets: boolean;
   pet_details?: string;
