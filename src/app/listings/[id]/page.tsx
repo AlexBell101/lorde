@@ -71,14 +71,23 @@ export default async function ListingDetailPage({
       </header>
 
       <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* Photo */}
-        {photos.length > 0 ? (
+        {/* Photo grid */}
+        {photos.length === 0 ? (
+          <div className="w-full h-72 rounded-2xl bg-muted flex items-center justify-center mb-8">
+            <Building2 className="w-12 h-12 text-muted-foreground/30" />
+          </div>
+        ) : photos.length === 1 ? (
           <div className="w-full h-72 rounded-2xl overflow-hidden mb-8">
             <img src={photos[0]} alt={p.name} className="w-full h-full object-cover" />
           </div>
         ) : (
-          <div className="w-full h-72 rounded-2xl bg-muted flex items-center justify-center mb-8">
-            <Building2 className="w-12 h-12 text-muted-foreground/30" />
+          <div className="grid grid-cols-2 gap-2 h-72 rounded-2xl overflow-hidden mb-8">
+            <img src={photos[0]} alt={p.name} className="w-full h-full object-cover" />
+            <div className={`grid gap-2 ${photos.length > 2 ? "grid-rows-2" : "grid-rows-1"}`}>
+              {photos.slice(1, 3).map((photo, i) => (
+                <img key={i} src={photo} alt={`${p.name} ${i + 2}`} className="w-full h-full object-cover" />
+              ))}
+            </div>
           </div>
         )}
 
