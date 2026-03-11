@@ -287,8 +287,8 @@ export function MapSearch({ initialListings }: MapSearchProps) {
           ref={mapRef}
           mapboxAccessToken={MAPBOX_TOKEN}
           initialViewState={{
-            longitude: -122.4194,
-            latitude: 37.7749,
+            longitude: -84.5120,
+            latitude: 39.1031,
             zoom: 12,
           }}
           mapStyle={MAP_STYLE}
