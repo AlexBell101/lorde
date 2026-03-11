@@ -10,16 +10,16 @@ export async function POST(request: NextRequest) {
 
     const admin = await createAdminClient();
 
-    // Step 1: create the auth user via admin API (bypasses GoTrue trigger issues)
+    // Step 1: create the auth user via admin API
     const { data: authData, error: authError } = await admin.auth.admin.createUser({
       email,
       password,
-      email_confirm: true, // auto-confirm so no email needed
+      email_confirm: true,
       user_metadata: { full_name, role },
     });
 
     if (authError) {
-      console.error("[signup] auth.admin.createUser failed:", authError);
+      console.error("[signup] auth.admin.createUser failed:", authError.message, authError.status);
       return NextResponse.json(
         { error: authError.message, code: authError.status },
         { status: 400 }
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const userId = authData.user.id;
     console.log("[signup] auth user created:", userId);
 
-    // Step 2: manually upsert the profile (in case trigger didn't fire)
+    // Step 2: upsert profile (handles case where trigger fired or didn't)
     const { error: profileError } = await admin
       .from("profiles")
       .upsert({
@@ -40,23 +40,24 @@ export async function POST(request: NextRequest) {
       });
 
     if (profileError) {
-      console.error("[signup] profile upsert failed:", profileError);
-      // Don't block signup — auth user was created successfully
+      console.error("[signup] profile upsert failed:", profileError.message, profileError.code);
     } else {
-      console.log("[signup] profile created for:", userId);
+      console.log("[signup] profile ready for:", userId);
     }
 
-    // Step 3: sign the user in to get a session
-    const { data: signInData, error: signInError } = await admin.auth.admin.generateLink({
-      type: "magiclink",
-      email,
-    });
+    // Step 3: create renter_profiles row if needed
+    if (role === "renter") {
+      const { error: renterError } = await admin
+        .from("renter_profiles")
+        .upsert({ user_id: userId });
 
-    if (signInError) {
-      console.error("[signup] generateLink failed:", signInError);
+      if (renterError) {
+        console.error("[signup] renter_profile upsert failed:", renterError.message, renterError.code);
+      } else {
+        console.log("[signup] renter_profile ready for:", userId);
+      }
     }
 
-    // Return success — client will sign in separately
     return NextResponse.json({ success: true, userId });
   } catch (err) {
     console.error("[signup] unexpected error:", err);
