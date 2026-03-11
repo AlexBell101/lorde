@@ -71,7 +71,12 @@ export function MapSearch({ initialListings }: MapSearchProps) {
     petFriendly: false,
   });
 
-  const filtered = initialListings.filter((l) => {
+  // Guard against null properties/units (e.g. while RLS policies propagate)
+  const validListings = initialListings.filter(
+    (l) => l.properties != null && l.units != null
+  );
+
+  const filtered = validListings.filter((l) => {
     const q = search.toLowerCase();
     const matchSearch =
       !q ||
@@ -282,9 +287,9 @@ export function MapSearch({ initialListings }: MapSearchProps) {
           ref={mapRef}
           mapboxAccessToken={MAPBOX_TOKEN}
           initialViewState={{
-            longitude: -98.5795,
-            latitude: 39.8283,
-            zoom: 4,
+            longitude: -122.4194,
+            latitude: 37.7749,
+            zoom: 12,
           }}
           mapStyle={MAP_STYLE}
           style={{ width: "100%", height: "100%" }}
