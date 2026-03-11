@@ -368,7 +368,7 @@ export function MapSearch({ initialListings }: MapSearchProps) {
                       )}
                     </div>
 
-                    <Link href={`/renter/listings/${selectedListing.id}`}>
+                    <Link href={`/listings/${selectedListing.id}`}>
                       <Button size="sm" className="w-full">
                         View listing
                       </Button>

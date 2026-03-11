@@ -40,20 +40,32 @@ function SignupForm() {
     setLoading(true);
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-      options: {
-        data: {
-          full_name: data.full_name,
-          role,
-        },
-      },
+    // Step 1: create user via our server-side route (logs to Vercel, bypasses trigger issues)
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: data.email, password: data.password, full_name: data.full_name, role }),
     });
 
-    if (error) {
-      toast({ title: "Signup failed", description: error.message, variant: "destructive" });
+    const json = await res.json();
+    console.log("[signup] server response:", json);
+
+    if (!res.ok) {
+      toast({ title: "Signup failed", description: json.error ?? "Unknown error", variant: "destructive" });
       setLoading(false);
+      return;
+    }
+
+    // Step 2: sign in with the newly created credentials
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
+
+    if (signInError) {
+      console.error("[signup] sign-in after signup failed:", signInError);
+      toast({ title: "Account created! Please sign in.", description: "Head to the login page.", variant: "default" });
+      router.push("/login");
       return;
     }
 
