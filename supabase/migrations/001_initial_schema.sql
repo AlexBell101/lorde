@@ -70,17 +70,6 @@ alter table public.renter_profiles enable row level security;
 create policy "Renters can view own profile" on public.renter_profiles
   for select using (auth.uid() = user_id);
 
-create policy "Landlords can view renter profiles for their applications" on public.renter_profiles
-  for select using (
-    exists (
-      select 1 from public.applications a
-      join public.listings l on l.id = a.listing_id
-      join public.properties p on p.id = l.property_id
-      where a.renter_id = renter_profiles.user_id
-      and p.landlord_id = auth.uid()
-    )
-  );
-
 create policy "Renters can manage own profile" on public.renter_profiles
   for all using (auth.uid() = user_id);
 
@@ -111,16 +100,6 @@ alter table public.properties enable row level security;
 
 create policy "Landlords can manage own properties" on public.properties
   for all using (auth.uid() = landlord_id);
-
-create policy "Authenticated users can view active listed properties" on public.properties
-  for select using (
-    auth.role() = 'authenticated'
-    and exists (
-      select 1 from public.listings
-      where property_id = properties.id
-      and status = 'active'
-    )
-  );
 
 -- ============================================================
 -- UNITS
@@ -158,16 +137,6 @@ create policy "Authenticated users can view available units" on public.units
   for select using (
     auth.role() = 'authenticated'
     and status = 'available'
-  );
-
-create policy "Tenants can view their own unit" on public.units
-  for select using (
-    exists (
-      select 1 from public.leases
-      where unit_id = units.id
-      and renter_id = auth.uid()
-      and status = 'active'
-    )
   );
 
 -- ============================================================
@@ -416,6 +385,44 @@ create policy "Users can mark own received messages as read" on public.messages
 
 create index messages_conversation_id_idx on public.messages(conversation_id);
 create index messages_created_at_idx on public.messages(created_at desc);
+
+-- ============================================================
+-- LATE-REFERENCE RLS POLICIES (added after all tables exist)
+-- ============================================================
+
+-- Properties: viewable if they have active listings
+create policy "Authenticated users can view active listed properties" on public.properties
+  for select using (
+    auth.role() = 'authenticated'
+    and exists (
+      select 1 from public.listings
+      where property_id = properties.id
+      and status = 'active'
+    )
+  );
+
+-- Units: tenants can view their own leased unit
+create policy "Tenants can view their own unit" on public.units
+  for select using (
+    exists (
+      select 1 from public.leases
+      where unit_id = units.id
+      and renter_id = auth.uid()
+      and status = 'active'
+    )
+  );
+
+-- Renter profiles: landlords can view profiles of applicants
+create policy "Landlords can view renter profiles for their applications" on public.renter_profiles
+  for select using (
+    exists (
+      select 1 from public.applications a
+      join public.listings l on l.id = a.listing_id
+      join public.properties p on p.id = l.property_id
+      where a.renter_id = renter_profiles.user_id
+      and p.landlord_id = auth.uid()
+    )
+  );
 
 -- ============================================================
 -- TRIGGERS: updated_at auto-update

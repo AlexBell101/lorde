@@ -4,26 +4,27 @@
 
 @layer base {
   :root {
-    --background: 220 13% 5%;
-    --foreground: 210 40% 98%;
-    --card: 220 13% 8%;
-    --card-foreground: 210 40% 98%;
-    --popover: 220 13% 8%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 239 84% 67%;
+    /* Brand: Sand background, Navy text, Brick primary */
+    --background:         35 57% 93%;   /* #F5EFE6 sand */
+    --foreground:         212 51% 12%;  /* #0F1E2E navy */
+    --card:               0 0% 100%;    /* white */
+    --card-foreground:    212 51% 12%;
+    --popover:            0 0% 100%;
+    --popover-foreground: 212 51% 12%;
+    --primary:            4 58% 43%;    /* #B03A2E brick */
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 13% 12%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 220 13% 14%;
-    --muted-foreground: 215 20% 55%;
-    --accent: 220 13% 14%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 72% 51%;
+    --secondary:          35 30% 88%;   /* slightly darker sand */
+    --secondary-foreground: 212 51% 12%;
+    --muted:              220 14% 96%;  /* gray-100 */
+    --muted-foreground:   215 16% 47%;  /* gray-500 */
+    --accent:             204 42% 39%;  /* #3A6B8C steel */
+    --accent-foreground:  0 0% 100%;
+    --destructive:        0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 15%;
-    --input: 220 13% 15%;
-    --ring: 239 84% 67%;
-    --radius: 0.625rem;
+    --border:             220 13% 87%;  /* gray-300 */
+    --input:              220 13% 87%;
+    --ring:               4 58% 43%;    /* brick */
+    --radius:             0.5rem;
   }
 }
 
@@ -37,12 +38,17 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1, h2, h3 {
+    @apply tracking-tight;
+    font-family: var(--font-serif), Georgia, serif;
+  }
+
+  h4, h5, h6 {
     @apply tracking-tight;
   }
 
   ::selection {
-    @apply bg-primary/30;
+    background: hsl(4 58% 43% / 0.2);
   }
 
   ::-webkit-scrollbar {
@@ -59,53 +65,77 @@
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground;
+    @apply bg-muted-foreground/40;
   }
 }
 
 @layer utilities {
+  /* Glass card — light version */
   .glass {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50;
+    @apply bg-white/80 backdrop-blur-xl border border-border/60 shadow-sm;
   }
 
-  .gradient-text {
-    @apply bg-gradient-to-r from-brand-400 to-brand-600 bg-clip-text text-transparent;
+  /* Section helpers */
+  .section-sand {
+    background-color: #F5EFE6;
+  }
+
+  .section-navy {
+    background-color: #0F1E2E;
+    color: #F3F4F6;
   }
 
   .focus-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
+
+  /* Trust badge */
+  .badge-trust {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium;
+    background-color: #3A6B8C;
+    color: #fff;
+  }
 }
 
-/* Mapbox overrides */
+/* Mapbox overrides — keep map dark for readability */
 .mapboxgl-map {
-  font-family: inherit !important;
+  font-family: var(--font-sans), system-ui, sans-serif !important;
 }
 
 .mapboxgl-popup-content {
-  @apply bg-card border border-border rounded-xl shadow-2xl p-0 overflow-hidden !important;
-  color: inherit !important;
+  background: #fff !important;
+  border: 1px solid hsl(220 13% 87%) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 24px rgba(15,30,46,0.12) !important;
+  padding: 0 !important;
+  overflow: hidden;
+  color: #0F1E2E !important;
 }
 
 .mapboxgl-popup-close-button {
-  @apply text-muted-foreground hover:text-foreground p-1 !important;
+  color: hsl(215 16% 47%) !important;
+  padding: 4px !important;
 }
 
 .mapboxgl-popup-tip {
-  @apply border-t-card !important;
+  border-top-color: #fff !important;
 }
 
 .mapboxgl-ctrl-group {
-  @apply bg-card border border-border rounded-lg overflow-hidden !important;
+  background: #fff !important;
+  border: 1px solid hsl(220 13% 87%) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 2px 8px rgba(15,30,46,0.08) !important;
 }
 
 .mapboxgl-ctrl-group button {
-  @apply text-foreground hover:bg-secondary !important;
+  color: #0F1E2E !important;
 }
 
 /* Stripe element overrides */
 .StripeElement {
-  @apply bg-input border border-border rounded-lg px-3 py-2.5 text-foreground;
+  @apply bg-white border border-border rounded-lg px-3 py-2.5 text-foreground;
 }
 
 .StripeElement--focus {

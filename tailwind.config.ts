@@ -1,7 +1,6 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,52 +9,45 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Brand palette
+        navy:  "#0F1E2E",
+        brick: "#B03A2E",
+        sand:  "#F5EFE6",
+        steel: "#3A6B8C",
+        // Semantic tokens (CSS variable-based)
         background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        foreground:  "hsl(var(--foreground))",
         card: {
-          DEFAULT: "hsl(var(--card))",
+          DEFAULT:    "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
+          DEFAULT:    "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT:    "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
+          DEFAULT:    "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
+          DEFAULT:    "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
+          DEFAULT:    "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
+          DEFAULT:    "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
         border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        brand: {
-          50: "#f0f4ff",
-          100: "#e0e9ff",
-          200: "#c7d7fe",
-          300: "#a5bcfc",
-          400: "#8098f9",
-          500: "#6174f5",
-          600: "#4f54ea",
-          700: "#4040d4",
-          800: "#3535ab",
-          900: "#312f87",
-          950: "#1e1b4b",
-        },
+        input:  "hsl(var(--input))",
+        ring:   "hsl(var(--ring))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -63,21 +55,22 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "monospace"],
+        sans:  ["var(--font-sans)", "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
+        mono:  ["var(--font-mono)", "monospace"],
       },
       animation: {
-        "fade-in": "fadeIn 0.2s ease-in-out",
+        "fade-in":  "fadeIn 0.2s ease-in-out",
         "slide-up": "slideUp 0.3s ease-out",
       },
       keyframes: {
         fadeIn: {
-          "0%": { opacity: "0" },
+          "0%":   { opacity: "0" },
           "100%": { opacity: "1" },
         },
         slideUp: {
-          "0%": { transform: "translateY(10px)", opacity: "0" },
-          "100%": { transform: "translateY(0)", opacity: "1" },
+          "0%":   { transform: "translateY(10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)",    opacity: "1" },
         },
       },
     },

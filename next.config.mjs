@@ -13,6 +13,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "api.mapbox.com",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
     ],
   },
 };
