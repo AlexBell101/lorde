@@ -4,6 +4,8 @@ import { MapSearch } from "@/components/renter/map-search";
 export default async function SearchPage() {
   const supabase = await createClient();
 
+  const { data: { user } } = await supabase.auth.getUser();
+
   // Fetch active listings with geo data
   const { data: listings } = await supabase
     .from("listings")
@@ -15,5 +17,20 @@ export default async function SearchPage() {
     .eq("status", "active")
     .order("created_at", { ascending: false });
 
-  return <MapSearch initialListings={listings ?? []} />;
+  // Fetch saved listing IDs for the logged-in user
+  let savedListingIds: string[] = [];
+  if (user) {
+    const { data: saved } = await supabase
+      .from("saved_listings")
+      .select("listing_id");
+    savedListingIds = (saved ?? []).map((s) => s.listing_id);
+  }
+
+  return (
+    <MapSearch
+      initialListings={listings ?? []}
+      savedListingIds={savedListingIds}
+      isLoggedIn={!!user}
+    />
+  );
 }

@@ -8,6 +8,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, bedroomLabel, bathroomLabel } from "@/lib/utils";
 import { ListingApplyCta } from "@/components/listings/listing-apply-cta";
+import { SaveListingButton } from "@/components/listings/save-listing-button";
 import type { RenterProfile } from "@/types";
 
 const AMENITY_ICONS: Record<string, React.ReactNode> = {
@@ -41,11 +42,12 @@ export default async function ListingDetailPage({
     notFound();
   }
 
-  // Resolve auth state for apply CTA
+  // Resolve auth state for apply CTA + save button
   const { data: { user } } = await supabase.auth.getUser();
   let isRenter = false;
   let alreadyApplied = false;
   let renterProfile: RenterProfile | null = null;
+  let isSaved = false;
 
   if (user) {
     const { data: profile } = await supabase
@@ -53,14 +55,23 @@ export default async function ListingDetailPage({
     isRenter = profile?.role === "renter";
 
     if (isRenter) {
-      const [{ data: existingApp }, { data: rp }] = await Promise.all([
+      const [{ data: existingApp }, { data: rp }, { data: savedRow }] = await Promise.all([
         supabase.from("applications").select("id")
           .eq("listing_id", id).eq("renter_id", user.id).maybeSingle(),
         supabase.from("renter_profiles").select("*")
           .eq("user_id", user.id).maybeSingle(),
+        supabase.from("saved_listings").select("id")
+          .eq("user_id", user.id).eq("listing_id", id).maybeSingle(),
       ]);
       alreadyApplied = !!existingApp;
       renterProfile = rp as RenterProfile | null;
+      isSaved = !!savedRow;
+    } else {
+      // Non-renter (landlord) can still save
+      const { data: savedRow } = await supabase
+        .from("saved_listings").select("id")
+        .eq("user_id", user.id).eq("listing_id", id).maybeSingle();
+      isSaved = !!savedRow;
     }
   }
 
@@ -199,10 +210,19 @@ export default async function ListingDetailPage({
           {/* Sidebar */}
           <div className="space-y-4">
             <div className="rounded-2xl border border-border bg-card p-6 sticky top-20">
-              <p className="text-3xl font-bold text-foreground mb-1">
-                {formatCurrency(listing.rent_amount)}
-                <span className="text-base font-normal text-muted-foreground">/mo</span>
-              </p>
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <p className="text-3xl font-bold text-foreground">
+                  {formatCurrency(listing.rent_amount)}
+                  <span className="text-base font-normal text-muted-foreground">/mo</span>
+                </p>
+                {user && (
+                  <SaveListingButton
+                    listingId={id}
+                    initialSaved={isSaved}
+                    variant="default"
+                  />
+                )}
+              </div>
               <p className="text-sm text-muted-foreground mb-5">
                 Deposit: {formatCurrency(u.deposit_amount)}
               </p>

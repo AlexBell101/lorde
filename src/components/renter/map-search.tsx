@@ -20,11 +20,13 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Heart,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatCurrency, bedroomLabel, bathroomLabel } from "@/lib/utils";
+import { cn, formatCurrency, bedroomLabel, bathroomLabel } from "@/lib/utils";
+import { toast } from "@/components/ui/toaster";
 
 interface MapListing {
   id: string;
@@ -51,13 +53,15 @@ interface MapListing {
 
 interface MapSearchProps {
   initialListings: MapListing[];
+  savedListingIds?: string[];
+  isLoggedIn?: boolean;
 }
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
 
 const MAP_STYLE = "mapbox://styles/mapbox/dark-v11";
 
-export function MapSearch({ initialListings }: MapSearchProps) {
+export function MapSearch({ initialListings, savedListingIds = [], isLoggedIn = false }: MapSearchProps) {
   const mapRef = useRef<MapRef>(null);
   const [selectedListing, setSelectedListing] = useState<MapListing | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -70,6 +74,52 @@ export function MapSearch({ initialListings }: MapSearchProps) {
     bedrooms: "",
     petFriendly: false,
   });
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set(savedListingIds));
+  const [savingId, setSavingId] = useState<string | null>(null);
+
+  async function toggleSave(e: React.MouseEvent, listingId: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isLoggedIn) return;
+    if (savingId === listingId) return;
+
+    setSavingId(listingId);
+    const wasSaved = savedIds.has(listingId);
+    // Optimistic update
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      wasSaved ? next.delete(listingId) : next.add(listingId);
+      return next;
+    });
+
+    try {
+      const res = await fetch(`/api/listings/${listingId}/save`, { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) {
+        // Revert
+        setSavedIds((prev) => {
+          const next = new Set(prev);
+          wasSaved ? next.add(listingId) : next.delete(listingId);
+          return next;
+        });
+        toast({ title: "Error", description: json.error, variant: "destructive" });
+      } else {
+        if (json.saved) {
+          toast({ title: "Saved!", description: "Find it in your Saved listings.", variant: "success" });
+        } else {
+          toast({ title: "Removed from saved" });
+        }
+      }
+    } catch {
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        wasSaved ? next.add(listingId) : next.delete(listingId);
+        return next;
+      });
+    } finally {
+      setSavingId(null);
+    }
+  }
 
   // Guard against null properties/units (e.g. while RLS policies propagate)
   const validListings = initialListings.filter(
@@ -202,16 +252,44 @@ export function MapSearch({ initialListings }: MapSearchProps) {
                   }`}
                 >
                   {l.properties.photos?.[0] ? (
-                    <div className="h-36 rounded-lg overflow-hidden mb-3">
+                    <div className="relative h-36 rounded-lg overflow-hidden mb-3">
                       <img
                         src={l.properties.photos[0]}
                         alt={l.title}
                         className="w-full h-full object-cover"
                       />
+                      {isLoggedIn && (
+                        <button
+                          onClick={(e) => toggleSave(e, l.id)}
+                          disabled={savingId === l.id}
+                          className={cn(
+                            "absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm",
+                            savedIds.has(l.id)
+                              ? "bg-white text-rose-500"
+                              : "bg-black/40 text-white hover:bg-black/60"
+                          )}
+                        >
+                          <Heart className={cn("w-4 h-4", savedIds.has(l.id) && "fill-rose-500")} />
+                        </button>
+                      )}
                     </div>
                   ) : (
-                    <div className="h-36 rounded-lg bg-muted mb-3 flex items-center justify-center">
+                    <div className="relative h-36 rounded-lg bg-muted mb-3 flex items-center justify-center">
                       <MapPin className="w-6 h-6 text-muted-foreground/30" />
+                      {isLoggedIn && (
+                        <button
+                          onClick={(e) => toggleSave(e, l.id)}
+                          disabled={savingId === l.id}
+                          className={cn(
+                            "absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm",
+                            savedIds.has(l.id)
+                              ? "bg-white text-rose-500"
+                              : "bg-secondary/80 text-muted-foreground hover:text-foreground border border-border"
+                          )}
+                        >
+                          <Heart className={cn("w-4 h-4", savedIds.has(l.id) && "fill-rose-500")} />
+                        </button>
+                      )}
                     </div>
                   )}
 
@@ -348,12 +426,23 @@ export function MapSearch({ initialListings }: MapSearchProps) {
                       <h3 className="font-semibold text-sm leading-tight text-foreground">
                         {selectedListing.title}
                       </h3>
-                      <button
-                        onClick={() => setSelectedListing(null)}
-                        className="text-muted-foreground hover:text-foreground shrink-0"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center gap-1 shrink-0">
+                        {isLoggedIn && (
+                          <button
+                            onClick={(e) => toggleSave(e, selectedListing.id)}
+                            disabled={savingId === selectedListing.id}
+                            className="text-muted-foreground hover:text-rose-500 transition-colors"
+                          >
+                            <Heart className={cn("w-3.5 h-3.5", savedIds.has(selectedListing.id) && "fill-rose-500 text-rose-500")} />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setSelectedListing(null)}
+                          className="text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
                     <p className="text-lg font-bold text-primary mb-2">
