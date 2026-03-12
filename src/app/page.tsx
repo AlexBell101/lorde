@@ -25,9 +25,9 @@ async function getFeaturedListings() {
 }
 
 const HERO_PHOTOS = [
-  { src: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80", alt: "Modern apartment building" },
-  { src: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80", alt: "Bright apartment interior" },
-  { src: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80", alt: "Minimal apartment living room" },
+  { src: "/images/image1.png", alt: "Cincinnati skyline at golden hour — Roebling Bridge and Ohio River" },
+  { src: "/images/image2.png", alt: "Bright Cincinnati apartment with exposed brick and hardwood floors" },
+  { src: "/images/image3.png", alt: "Cincinnati rental interior" },
 ];
 
 export default async function HomePage() {
@@ -119,13 +119,13 @@ export default async function HomePage() {
             {/* Right: photo mosaic */}
             <div className="relative hidden lg:block h-[540px]">
               <div className="absolute top-0 right-0 w-[58%] h-[55%] rounded-2xl overflow-hidden shadow-lg">
-                <Image src={HERO_PHOTOS[0].src} alt={HERO_PHOTOS[0].alt} fill className="object-cover" unoptimized />
+                <Image src={HERO_PHOTOS[0].src} alt={HERO_PHOTOS[0].alt} fill className="object-cover" />
               </div>
               <div className="absolute bottom-0 right-[38%] w-[44%] h-[48%] rounded-2xl overflow-hidden shadow-lg">
-                <Image src={HERO_PHOTOS[1].src} alt={HERO_PHOTOS[1].alt} fill className="object-cover" unoptimized />
+                <Image src={HERO_PHOTOS[1].src} alt={HERO_PHOTOS[1].alt} fill className="object-cover" />
               </div>
               <div className="absolute bottom-[8%] right-0 w-[36%] h-[42%] rounded-2xl overflow-hidden shadow-lg">
-                <Image src={HERO_PHOTOS[2].src} alt={HERO_PHOTOS[2].alt} fill className="object-cover" unoptimized />
+                <Image src={HERO_PHOTOS[2].src} alt={HERO_PHOTOS[2].alt} fill className="object-cover" />
               </div>
               {/* Floating price pill */}
               <div className="absolute top-[52%] left-[2%] bg-white rounded-xl shadow-lg px-4 py-3 border border-gray-100">
