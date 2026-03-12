@@ -51,6 +51,7 @@ export async function updateSession(request: NextRequest) {
     "/renter",
     "/messages",
     "/onboarding",
+    "/supportportal",
   ];
   const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
 

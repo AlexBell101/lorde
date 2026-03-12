@@ -5,9 +5,10 @@ import {
   MapPin, Bed, Bath, SquareCode, Calendar, Building2,
   Wifi, Car, PawPrint, Dumbbell, WashingMachine, ArrowLeft,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, bedroomLabel, bathroomLabel } from "@/lib/utils";
+import { ListingApplyCta } from "@/components/listings/listing-apply-cta";
+import type { RenterProfile } from "@/types";
 
 const AMENITY_ICONS: Record<string, React.ReactNode> = {
   "Gym":            <Dumbbell className="w-4 h-4" />,
@@ -40,6 +41,29 @@ export default async function ListingDetailPage({
     notFound();
   }
 
+  // Resolve auth state for apply CTA
+  const { data: { user } } = await supabase.auth.getUser();
+  let isRenter = false;
+  let alreadyApplied = false;
+  let renterProfile: RenterProfile | null = null;
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles").select("role").eq("id", user.id).single();
+    isRenter = profile?.role === "renter";
+
+    if (isRenter) {
+      const [{ data: existingApp }, { data: rp }] = await Promise.all([
+        supabase.from("applications").select("id")
+          .eq("listing_id", id).eq("renter_id", user.id).maybeSingle(),
+        supabase.from("renter_profiles").select("*")
+          .eq("user_id", user.id).maybeSingle(),
+      ]);
+      alreadyApplied = !!existingApp;
+      renterProfile = rp as RenterProfile | null;
+    }
+  }
+
   const p = listing.properties as {
     name: string; address: string; city: string; state: string; zip_code: string;
     amenities: string[]; photos: string[]; property_type: string; description: string;
@@ -61,12 +85,16 @@ export default async function ListingDetailPage({
         </Link>
         <Link href="/" className="font-serif text-lg font-semibold text-navy">Lorde</Link>
         <div className="flex items-center gap-3">
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Sign in
-          </Link>
-          <Link href="/signup" className="text-sm bg-brick text-white hover:bg-[#992F25] transition-colors rounded-lg px-4 py-1.5">
-            Sign up
-          </Link>
+          {user ? (
+            <Link href={isRenter ? "/renter/search" : "/landlord"} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Sign in</Link>
+              <Link href="/signup" className="text-sm bg-brick text-white hover:bg-[#992F25] transition-colors rounded-lg px-4 py-1.5">Sign up</Link>
+            </>
+          )}
         </div>
       </header>
 
@@ -179,12 +207,15 @@ export default async function ListingDetailPage({
                 Deposit: {formatCurrency(u.deposit_amount)}
               </p>
 
-              <Link href={`/signup?redirect=/renter/listings/${listing.id}`}>
-                <Button className="w-full mb-3">Apply now</Button>
-              </Link>
-              <Link href={`/login?redirect=/renter/listings/${listing.id}`}>
-                <Button variant="outline" className="w-full">Sign in to apply</Button>
-              </Link>
+              <ListingApplyCta
+                listingId={id}
+                listingTitle={listing.title}
+                rentAmount={listing.rent_amount}
+                isLoggedIn={!!user}
+                isRenter={isRenter}
+                alreadyApplied={alreadyApplied}
+                renterProfile={renterProfile}
+              />
 
               <p className="text-xs text-center text-muted-foreground mt-4">
                 No application fee. Direct from landlord.

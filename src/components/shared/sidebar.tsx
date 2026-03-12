@@ -15,6 +15,7 @@ import {
   User,
   BarChart3,
   Rss,
+  Headphones,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -33,6 +34,7 @@ const landlordNav: Array<{ href: string; label: string; icon: React.ElementType;
   { href: "/landlord/payments", label: "Payments", icon: CreditCard },
   { href: "/landlord/maintenance", label: "Maintenance", icon: Wrench },
   { href: "/messages", label: "Messages", icon: MessageSquare },
+  { href: "/landlord/support", label: "Support", icon: Headphones },
 ];
 
 const renterNav: Array<{ href: string; label: string; icon: React.ElementType; exact?: boolean }> = [
@@ -42,6 +44,7 @@ const renterNav: Array<{ href: string; label: string; icon: React.ElementType; e
   { href: "/renter/maintenance", label: "Maintenance", icon: Wrench },
   { href: "/renter/profile", label: "My Profile", icon: User },
   { href: "/messages", label: "Messages", icon: MessageSquare },
+  { href: "/renter/support", label: "Support", icon: Headphones },
 ];
 
 export function Sidebar({ role, userName }: SidebarProps) {
