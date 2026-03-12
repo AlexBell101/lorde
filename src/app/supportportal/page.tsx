@@ -31,7 +31,7 @@ export default async function SupportPortalPage({
   const { data: profile } = await supabase
     .from("profiles").select("role, full_name").eq("id", user.id).single();
 
-  if (profile?.role !== "support") {
+  if (profile?.role !== "support" && profile?.role !== "admin") {
     redirect("/");
   }
 
