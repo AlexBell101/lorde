@@ -4,10 +4,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Users, Building2, Headphones,
-  LogOut, ShieldCheck,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { LordeMark } from "@/components/shared/lorde-mark";
 
 const nav = [
   { href: "/admin",           label: "Overview",    icon: LayoutDashboard, exact: true },
@@ -31,8 +32,9 @@ export function AdminSidebar({ userName }: { userName: string }) {
     <aside className="w-56 shrink-0 h-screen flex flex-col border-r border-border bg-card">
       {/* Logo */}
       <div className="h-14 flex items-center gap-2 px-5 border-b border-border shrink-0">
-        <ShieldCheck className="w-4 h-4 text-primary" />
-        <span className="font-semibold text-sm">Lorde Admin</span>
+        <LordeMark size={24} className="shrink-0" />
+        <span className="font-semibold text-sm">Lorde</span>
+        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground px-1.5 py-0.5 rounded border border-border ml-0.5">Admin</span>
       </div>
 
       {/* Nav */}

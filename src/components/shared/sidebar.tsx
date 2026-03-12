@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { LordeMark } from "@/components/shared/lorde-mark";
 import type { UserRole } from "@/types";
 
 interface SidebarProps {
@@ -67,7 +68,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
     <aside className="w-60 shrink-0 h-screen flex flex-col border-r border-border bg-card">
       {/* Logo */}
       <div className="h-16 flex items-center px-5 border-b border-border shrink-0">
-        <Building2 className="w-5 h-5 text-primary mr-2" />
+        <LordeMark size={26} className="mr-2 shrink-0" />
         <span className="font-semibold tracking-tight">Lorde</span>
         <span className="ml-auto text-[10px] font-medium uppercase tracking-wider text-muted-foreground px-1.5 py-0.5 rounded border border-border">
           {role}

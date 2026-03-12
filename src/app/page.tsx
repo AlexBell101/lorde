@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { HomeNav } from "@/components/home/home-nav";
+import { LordeMark } from "@/components/shared/lorde-mark";
 import type { UserRole } from "@/types";
 
 async function getFeaturedListings() {
@@ -58,6 +59,7 @@ export default async function HomePage() {
       <header className="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
+            <LordeMark size={28} />
             <span className="font-serif text-xl font-semibold text-navy tracking-tight">Lorde</span>
             <span className="hidden sm:inline text-xs text-steel border border-steel/30 rounded px-1.5 py-0.5">Cincinnati</span>
           </Link>
