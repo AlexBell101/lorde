@@ -23,6 +23,7 @@ export default async function ListingsPage() {
     .in("property_id",
       supabase.from("properties").select("id").eq("landlord_id", user.id) as unknown as string[]
     )
+    .neq("status", "archived")
     .order("created_at", { ascending: false });
 
   const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "success" | "warning" | "outline" }> = {

@@ -43,6 +43,7 @@ const renterNav: Array<{ href: string; label: string; icon: React.ElementType; e
   { href: "/renter/search", label: "Search", icon: Search },
   { href: "/renter/saved", label: "Saved", icon: Heart },
   { href: "/renter/applications", label: "Applications", icon: FileText },
+  { href: "/renter/lease", label: "My Lease", icon: Building2 },
   { href: "/renter/payments", label: "Payments", icon: CreditCard },
   { href: "/renter/maintenance", label: "Maintenance", icon: Wrench },
   { href: "/renter/profile", label: "My Profile", icon: User },

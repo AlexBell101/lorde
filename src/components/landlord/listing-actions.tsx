@@ -21,10 +21,15 @@ export function ListingActions({ listing }: ListingActionsProps) {
       .update({ status })
       .eq("id", listing.id);
 
+    const toastLabel: Record<string, string> = {
+      active: "Listing published",
+      paused: "Listing paused",
+      archived: "Listing removed",
+    };
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: `Listing ${status}`, variant: "success" });
+      toast({ title: toastLabel[status] ?? `Listing ${status}`, variant: "success" });
       router.refresh();
     }
     setOpen(false);
@@ -84,7 +89,7 @@ export function ListingActions({ listing }: ListingActionsProps) {
             <div className="border-t border-border" />
             <button
               className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-secondary w-full text-left transition-colors text-destructive"
-              onClick={() => updateStatus("paused")}
+              onClick={() => updateStatus("archived")}
             >
               <Trash2 className="w-3.5 h-3.5" />
               Remove listing
