@@ -6,6 +6,7 @@ import { Search, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/components/ui/toaster";
+import { formatDate } from "@/lib/utils";
 
 type User = {
   id: string;
@@ -20,7 +21,6 @@ interface AdminUserTableProps {
   users: User[];
   currentQ: string;
   currentRole: string;
-  formatDate: (d: string) => string;
 }
 
 const ROLE_OPTIONS = ["all", "admin", "support", "landlord", "renter"] as const;
@@ -32,7 +32,7 @@ const ROLE_STYLE: Record<string, string> = {
   renter:   "bg-emerald-500/10 text-emerald-600",
 };
 
-export function AdminUserTable({ users, currentQ, currentRole, formatDate }: AdminUserTableProps) {
+export function AdminUserTable({ users, currentQ, currentRole }: AdminUserTableProps) {
   const router = useRouter();
   const [search, setSearch] = useState(currentQ);
   const [isPending, startTransition] = useTransition();

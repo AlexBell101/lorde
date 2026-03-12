@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatDate } from "@/lib/utils";
 import { AdminUserTable } from "@/components/admin/admin-user-table";
 
 export default async function AdminUsersPage({
@@ -47,7 +46,6 @@ export default async function AdminUsersPage({
         }))}
         currentQ={q ?? ""}
         currentRole={role ?? "all"}
-        formatDate={formatDate}
       />
     </div>
   );
