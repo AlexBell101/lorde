@@ -1,6 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Search, MessageSquare, FileText, ShieldCheck, MapPin, BadgeCheck } from "lucide-react";
+import {
+  ArrowRight, Search, MessageSquare, FileText, ShieldCheck,
+  MapPin, BadgeCheck, Heart, Sparkles, BarChart3, CreditCard,
+  Wrench, Home, CheckCircle2,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { HomeNav } from "@/components/home/home-nav";
 import type { UserRole } from "@/types";
@@ -99,8 +103,8 @@ export default async function HomePage() {
               <div className="flex items-center gap-6 mt-10 pt-10 border-t border-gray-200">
                 {[
                   { label: "Verified landlords" },
-                  { label: "Direct messaging" },
-                  { label: "Clear pricing" },
+                  { label: "AI leasing agent" },
+                  { label: "No platform fees" },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-1.5 text-xs text-gray-500">
                     <BadgeCheck className="w-3.5 h-3.5 text-steel" />
@@ -138,29 +142,38 @@ export default async function HomePage() {
       {/* ── How It Works ──────────────────────────────────────── */}
       <section id="how-it-works" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="font-serif text-3xl font-medium text-navy mb-3">How Lorde Works</h2>
-            <p className="text-gray-500 max-w-md mx-auto">Three steps from search to signed lease. No platform fees.</p>
+
+          {/* For Renters */}
+          <div className="text-center mb-14">
+            <p className="text-xs font-medium uppercase tracking-widest text-steel mb-3">For Renters</p>
+            <h2 className="font-serif text-3xl font-medium text-navy mb-3">Find Your Next Home in Three Steps</h2>
+            <p className="text-gray-500 max-w-lg mx-auto">
+              From first search to move-in day — every tool you need is built in. No third-party fees, no call centers, no waiting.
+            </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
+
+          <div className="grid md:grid-cols-3 gap-10 mb-24">
             {[
               {
                 icon: Search,
                 step: "01",
-                title: "Browse Listings",
-                desc: "Search verified rentals on a map. Filter by price, bedrooms, and neighborhood. Every listing is from a real landlord.",
+                title: "Browse with Confidence",
+                desc: "Search verified Cincinnati rentals on an interactive map. Filter by price, bedrooms, neighborhood, and pet policy. Every listing is tied to a real, local landlord — no management companies, no bait-and-switch.",
+                bullets: ["Map-based search across all neighborhoods", "Save listings you love with one tap", "Chat with an AI leasing agent on any listing"],
               },
               {
                 icon: MessageSquare,
                 step: "02",
-                title: "Message Directly",
-                desc: "Contact landlords without a middleman. Ask questions, schedule viewings, and negotiate — all in one place.",
+                title: "Connect & Apply",
+                desc: "Message landlords directly — no routing through a call center. When you're ready, submit a clean one-page application with your income, employment, and references. Reuse it across every listing you apply to.",
+                bullets: ["Direct in-app messaging with landlords", "One application, reused across all listings", "Real-time status updates as landlords review"],
               },
               {
                 icon: FileText,
                 step: "03",
-                title: "Apply & Sign",
-                desc: "Submit a reusable application. Get approved. Sign your lease. Move in. That's it.",
+                title: "Move In & Stay Organised",
+                desc: "Once approved, everything lives in your dashboard. View your lease details, pay rent online with autopay, submit maintenance requests from your phone, and track your lease end date — all in one place.",
+                bullets: ["Online lease viewer with key dates & terms", "Autopay rent through Stripe — no checks", "Submit and track maintenance requests"],
               },
             ].map((item) => (
               <div key={item.title} className="relative">
@@ -169,14 +182,68 @@ export default async function HomePage() {
                 </div>
                 <div className="relative pt-6">
                   <div className="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center mb-4">
-                    <item.icon className="w-4.5 h-4.5 text-steel" strokeWidth={1.5} />
+                    <item.icon className="w-4 h-4 text-steel" strokeWidth={1.5} />
                   </div>
                   <h3 className="font-serif text-lg font-medium text-navy mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+                  <p className="text-sm text-gray-500 leading-relaxed mb-4">{item.desc}</p>
+                  <ul className="space-y-1.5">
+                    {item.bullets.map((b) => (
+                      <li key={b} className="flex items-start gap-2 text-xs text-gray-500">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-steel shrink-0 mt-0.5" />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Divider */}
+          <div className="border-t border-gray-100 mb-20" />
+
+          {/* For Landlords */}
+          <div className="text-center mb-14">
+            <p className="text-xs font-medium uppercase tracking-widest text-steel mb-3">For Landlords</p>
+            <h2 className="font-serif text-3xl font-medium text-navy mb-3">Your Whole Portfolio. One Dashboard.</h2>
+            <p className="text-gray-500 max-w-lg mx-auto">
+              List properties, review applicants, collect rent, and track everything — without paying a percentage to a listing platform.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: Sparkles,
+                title: "AI-Powered Listings",
+                desc: "Write a great listing in seconds. Our AI generates compelling descriptions and suggests competitive pricing based on your unit details and Cincinnati market data.",
+              },
+              {
+                icon: Home,
+                title: "Applications & Leases",
+                desc: "Review income, employment, and credit range side-by-side. Approve with one click — the lease is created automatically with the right start date and term.",
+              },
+              {
+                icon: CreditCard,
+                title: "Rent Collection",
+                desc: "Stripe-powered payments with autopay support. Track every payment — on-time, late, or failed — with a full history per tenant.",
+              },
+              {
+                icon: BarChart3,
+                title: "Analytics Dashboard",
+                desc: "See occupancy rate, monthly revenue, application pipeline, and payment health across your entire portfolio in real time.",
+              },
+            ].map((item) => (
+              <div key={item.title} className="p-6 rounded-xl border border-gray-100 bg-sand/40 hover:border-gray-200 transition-colors">
+                <div className="w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center mb-4">
+                  <item.icon className="w-4 h-4 text-steel" strokeWidth={1.5} />
+                </div>
+                <h4 className="font-serif text-sm font-medium text-navy mb-2">{item.title}</h4>
+                <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
         </div>
       </section>
 
@@ -278,18 +345,56 @@ export default async function HomePage() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <ShieldCheck className="w-8 h-8 text-steel mx-auto mb-6" strokeWidth={1.5} />
           <h2 className="font-serif text-3xl font-medium text-navy mb-4">
-            Verified landlords. Transparent listings.<br />No unnecessary layers.
+            Built for how Cincinnati actually rents.
           </h2>
-          <p className="text-gray-500 leading-relaxed max-w-xl mx-auto mb-12">
-            Every listing on Lorde is connected to a verified local landlord. Pricing is clear. Availability is real. You communicate directly — no bots, no call centers.
+          <p className="text-gray-500 leading-relaxed max-w-2xl mx-auto mb-14">
+            Lorde isn&apos;t a national listing farm that happens to include Cincinnati. It&apos;s a platform built specifically for this city — the neighbourhoods, the landlords, and the renters who live here. Every feature exists because a local person needed it.
           </p>
-          <div className="grid sm:grid-cols-3 gap-8 text-left">
+          <div className="grid sm:grid-cols-3 gap-6 text-left mb-10">
             {[
-              { title: "Verified Landlords", desc: "Every landlord is identity-verified before listing. You know who you're renting from." },
-              { title: "Transparent Pricing", desc: "What you see is what you pay. No surprise fees added at checkout." },
-              { title: "Direct Communication", desc: "Message your future landlord directly. No platform routing or automated responses." },
+              {
+                icon: ShieldCheck,
+                title: "Verified Landlords Only",
+                desc: "Every landlord account is verified before their first listing goes live. You know the name, you see the property — no anonymous management companies hiding behind a portal.",
+              },
+              {
+                icon: MessageSquare,
+                title: "Real Direct Communication",
+                desc: "Message your future landlord directly in the app. No call centre routing, no automated holding patterns. When you ask a question, a real person answers.",
+              },
+              {
+                icon: Sparkles,
+                title: "AI That Actually Helps",
+                desc: "Our AI leasing agent answers questions about any listing — instantly, any time of day. Landlords use AI to write listings and get pricing suggestions. It's assistance, not a replacement for real people.",
+              },
             ].map((item) => (
               <div key={item.title} className="p-6 rounded-xl border border-gray-100 bg-sand/40">
+                <item.icon className="w-4 h-4 text-steel mb-3" strokeWidth={1.5} />
+                <h4 className="font-medium text-navy text-sm mb-2">{item.title}</h4>
+                <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="grid sm:grid-cols-3 gap-6 text-left">
+            {[
+              {
+                icon: Heart,
+                title: "Save & Come Back",
+                desc: "Tap the heart on any listing to save it. Build a shortlist, compare your options, and apply when you're ready — no pressure, no expiry timers.",
+              },
+              {
+                icon: Wrench,
+                title: "Maintenance, Handled",
+                desc: "Renters submit maintenance requests from their dashboard. Landlords triage and track them in one place. No more text chains or missed emails.",
+              },
+              {
+                icon: BadgeCheck,
+                title: "Transparent Pricing",
+                desc: "What the listing says is what you pay. No platform surcharges at checkout, no application fees. The price shown is the monthly rent.",
+              },
+            ].map((item) => (
+              <div key={item.title} className="p-6 rounded-xl border border-gray-100 bg-sand/40">
+                <item.icon className="w-4 h-4 text-steel mb-3" strokeWidth={1.5} />
                 <h4 className="font-medium text-navy text-sm mb-2">{item.title}</h4>
                 <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
               </div>
@@ -302,10 +407,10 @@ export default async function HomePage() {
       <section className="py-20 bg-navy">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <h2 className="font-serif text-3xl font-medium text-white mb-4">
-            Ready to rent directly?
+            Cincinnati&apos;s rental market, simplified.
           </h2>
-          <p className="text-gray-400 mb-8">
-            Join Cincinnati landlords and renters who skip the middleman.
+          <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+            Whether you&apos;re searching for your next home or managing a portfolio of properties — Lorde gives you every tool you need, with no middlemen taking a cut.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/search"
