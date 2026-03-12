@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Search, MessageSquare, FileText, ShieldCheck, MapPin, BadgeCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { HomeNav } from "@/components/home/home-nav";
+import type { UserRole } from "@/types";
 
 async function getFeaturedListings() {
   try {
@@ -26,6 +28,25 @@ const HERO_PHOTOS = [
 export default async function HomePage() {
   const listings = await getFeaturedListings();
 
+  // Auth state for nav
+  let homeUser: { name: string; role: UserRole } | null = null;
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, role")
+        .eq("id", user.id)
+        .single();
+      if (profile) {
+        homeUser = { name: profile.full_name, role: profile.role as UserRole };
+      }
+    }
+  } catch {
+    // Non-critical — nav falls back to signed-out state
+  }
+
   return (
     <div className="min-h-screen bg-sand font-sans">
 
@@ -41,15 +62,7 @@ export default async function HomePage() {
             <Link href="#how-it-works" className="hover:text-navy transition-colors">How It Works</Link>
             <Link href="#trust" className="hover:text-navy transition-colors">Why Lorde</Link>
           </nav>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm text-gray-600 hover:text-navy transition-colors px-3 py-2">
-              Sign in
-            </Link>
-            <Link href="/signup?role=landlord"
-              className="text-sm bg-navy text-white hover:bg-navy/90 transition-colors rounded-lg px-4 py-2">
-              List Property
-            </Link>
-          </div>
+          <HomeNav user={homeUser} />
         </div>
       </header>
 
@@ -187,7 +200,7 @@ export default async function HomePage() {
               const unit = l.units as any;
               const photo = HERO_PHOTOS[i % HERO_PHOTOS.length];
               return (
-                <Link href={`/renter/listings/${l.id}`} key={l.id}
+                <Link href={`/listings/${l.id}`} key={l.id}
                   className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
                   <div className="relative h-52 overflow-hidden">
                     <Image src={photo.src} alt={l.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" unoptimized />

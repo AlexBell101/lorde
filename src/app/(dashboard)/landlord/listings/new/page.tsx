@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Sparkles, TrendingUp } from "lucide-react";
+import { Loader2, Sparkles, TrendingUp, Camera } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
+import { PropertyPhotoUpload } from "@/components/landlord/property-photo-upload";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -51,6 +52,7 @@ export default function NewListingPage() {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
   const [syndicationTargets, setSyndicationTargets] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<string[]>([]);
   const [priceRec, setPriceRec] = useState<{
     recommended_price: number;
     min_price: number;
@@ -89,7 +91,10 @@ export default function NewListingPage() {
         .eq("property_id", selectedPropertyId)
         .eq("status", "available");
       setUnits(data ?? []);
-      setSelectedProperty(properties.find((p) => p.id === selectedPropertyId) ?? null);
+      const prop = properties.find((p) => p.id === selectedPropertyId) ?? null;
+      setSelectedProperty(prop);
+      // Pre-populate photos from the selected property
+      setPhotos(prop?.photos ?? []);
     }
     loadUnits();
   }, [selectedPropertyId, properties]);
@@ -170,6 +175,17 @@ export default function NewListingPage() {
   async function onSubmit(data: FormData) {
     setLoading(true);
     const supabase = createClient();
+
+    // Persist any photo changes back to the property
+    if (
+      selectedProperty &&
+      JSON.stringify(photos) !== JSON.stringify(selectedProperty.photos ?? [])
+    ) {
+      await supabase
+        .from("properties")
+        .update({ photos })
+        .eq("id", data.property_id);
+    }
 
     const { error } = await supabase.from("listings").insert({
       ...data,
@@ -252,6 +268,21 @@ export default function NewListingPage() {
             <p className="text-sm text-muted-foreground">No available units for this property.</p>
           )}
         </div>
+
+        {/* Photos — only show after a property is selected */}
+        {selectedProperty && (
+          <div className="glass rounded-xl p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <Camera className="w-4 h-4 text-muted-foreground" />
+              <h2 className="font-semibold">Photos</h2>
+            </div>
+            <PropertyPhotoUpload
+              propertyId={selectedProperty.id}
+              initialPhotos={selectedProperty.photos ?? []}
+              onChange={setPhotos}
+            />
+          </div>
+        )}
 
         {/* Listing details */}
         <div className="glass rounded-xl p-6 space-y-4">
