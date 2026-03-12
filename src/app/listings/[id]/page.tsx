@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, bedroomLabel, bathroomLabel } from "@/lib/utils";
 import { ListingApplyCta } from "@/components/listings/listing-apply-cta";
 import { SaveListingButton } from "@/components/listings/save-listing-button";
-import type { RenterProfile } from "@/types";
+import { HomeNav } from "@/components/home/home-nav";
+import type { RenterProfile, UserRole } from "@/types";
 
 const AMENITY_ICONS: Record<string, React.ReactNode> = {
   "Gym":            <Dumbbell className="w-4 h-4" />,
@@ -42,17 +43,19 @@ export default async function ListingDetailPage({
     notFound();
   }
 
-  // Resolve auth state for apply CTA + save button
+  // Resolve auth state for nav + apply CTA + save button
   const { data: { user } } = await supabase.auth.getUser();
   let isRenter = false;
   let alreadyApplied = false;
   let renterProfile: RenterProfile | null = null;
   let isSaved = false;
+  let homeUser: { name: string; role: UserRole } | null = null;
 
   if (user) {
     const { data: profile } = await supabase
-      .from("profiles").select("role").eq("id", user.id).single();
+      .from("profiles").select("full_name, role").eq("id", user.id).single();
     isRenter = profile?.role === "renter";
+    if (profile) homeUser = { name: profile.full_name, role: profile.role as UserRole };
 
     if (isRenter) {
       const [{ data: existingApp }, { data: rp }, { data: savedRow }] = await Promise.all([
@@ -95,18 +98,7 @@ export default async function ListingDetailPage({
           Back to search
         </Link>
         <Link href="/" className="font-serif text-lg font-semibold text-navy">Lorde</Link>
-        <div className="flex items-center gap-3">
-          {user ? (
-            <Link href={isRenter ? "/renter/search" : "/landlord"} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Dashboard
-            </Link>
-          ) : (
-            <>
-              <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Sign in</Link>
-              <Link href="/signup" className="text-sm bg-brick text-white hover:bg-[#992F25] transition-colors rounded-lg px-4 py-1.5">Sign up</Link>
-            </>
-          )}
-        </div>
+        <HomeNav user={homeUser} />
       </header>
 
       <div className="max-w-4xl mx-auto px-6 py-8">
