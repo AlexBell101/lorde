@@ -34,6 +34,7 @@ const landlordNav: Array<{ href: string; label: string; icon: React.ElementType;
   { href: "/landlord/tenants", label: "Tenants", icon: Users },
   { href: "/landlord/payments", label: "Payments", icon: CreditCard },
   { href: "/landlord/maintenance", label: "Maintenance", icon: Wrench },
+  { href: "/landlord/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/messages", label: "Messages", icon: MessageSquare },
   { href: "/landlord/support", label: "Support", icon: Headphones },
 ];

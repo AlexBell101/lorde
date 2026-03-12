@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, bedroomLabel, bathroomLabel } from "@/lib/utils";
 import { ListingApplyCta } from "@/components/listings/listing-apply-cta";
 import { SaveListingButton } from "@/components/listings/save-listing-button";
+import { ListingChatWidget } from "@/components/listings/listing-chat-widget";
 import { HomeNav } from "@/components/home/home-nav";
 import type { RenterProfile, UserRole } from "@/types";
 
@@ -236,6 +237,26 @@ export default async function ListingDetailPage({
           </div>
         </div>
       </div>
+
+      {/* AI Leasing Agent chat widget */}
+      <ListingChatWidget
+        context={{
+          listingTitle: listing.title,
+          rentAmount: listing.rent_amount,
+          availableDate: listing.available_date,
+          leaseTermMonths: listing.lease_term_months,
+          address: p.address,
+          city: p.city,
+          state: p.state,
+          bedrooms: u.bedrooms,
+          bathrooms: u.bathrooms,
+          squareFeet: u.square_feet,
+          amenities: p.amenities ?? [],
+          unitFeatures: u.features ?? [],
+          description: listing.description || p.description || "",
+          propertyType: p.property_type,
+        }}
+      />
     </div>
   );
 }
