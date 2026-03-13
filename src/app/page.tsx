@@ -72,7 +72,7 @@ export default async function HomePage() {
           <HomeNav user={homeUser} />
         </div>
         {/* OTR roofline — straddles navbar/hero boundary, decorative only */}
-        <div className="pointer-events-none absolute -bottom-[9px] left-0 w-full">
+        <div className="pointer-events-none absolute top-full left-0 w-full overflow-visible">
           <NavbarRoofline />
         </div>
       </header>
