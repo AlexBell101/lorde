@@ -8,7 +8,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { HomeNav } from "@/components/home/home-nav";
 import { LordeMark } from "@/components/shared/lorde-mark";
-import { NavbarRoofline } from "@/components/shared/navbar-roofline";
+import { HeroIllustration } from "@/components/home/hero-illustration";
 import type { UserRole } from "@/types";
 
 async function getFeaturedListings() {
@@ -57,7 +57,7 @@ export default async function HomePage() {
     <div className="min-h-screen bg-sand font-sans">
 
       {/* ── Nav ───────────────────────────────────────────────── */}
-      <header className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-sm relative">
+      <header className="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <LordeMark size={28} />
@@ -71,8 +71,6 @@ export default async function HomePage() {
           </nav>
           <HomeNav user={homeUser} />
         </div>
-        {/* OTR roofline — self-positioned at navbar bottom, decorative only */}
-        <NavbarRoofline />
       </header>
 
       {/* ── Hero ──────────────────────────────────────────────── */}
@@ -119,8 +117,11 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Right: photo mosaic */}
-            <div className="relative hidden lg:block h-[540px]">
+            {/* Right: photos over OTR architectural illustration */}
+            <div className="relative hidden lg:block h-[540px] overflow-hidden">
+              {/* Architectural illustration — background layer */}
+              <HeroIllustration />
+              {/* Photo mosaic — foreground */}
               <div className="absolute top-0 right-0 w-[58%] h-[55%] rounded-2xl overflow-hidden shadow-lg">
                 <Image src={HERO_PHOTOS[0].src} alt={HERO_PHOTOS[0].alt} fill className="object-cover" />
               </div>
