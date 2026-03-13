@@ -8,6 +8,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { HomeNav } from "@/components/home/home-nav";
 import { LordeMark } from "@/components/shared/lorde-mark";
+import { NavbarRoofline } from "@/components/shared/navbar-roofline";
 import type { UserRole } from "@/types";
 
 async function getFeaturedListings() {
@@ -56,7 +57,7 @@ export default async function HomePage() {
     <div className="min-h-screen bg-sand font-sans">
 
       {/* ── Nav ───────────────────────────────────────────────── */}
-      <header className="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
+      <header className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-sm relative">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <LordeMark size={28} />
@@ -69,6 +70,10 @@ export default async function HomePage() {
             <Link href="#trust" className="hover:text-navy transition-colors">Why Lorde</Link>
           </nav>
           <HomeNav user={homeUser} />
+        </div>
+        {/* OTR roofline — straddles navbar/hero boundary, decorative only */}
+        <div className="pointer-events-none absolute -bottom-[9px] left-0 w-full">
+          <NavbarRoofline />
         </div>
       </header>
 
